@@ -1,0 +1,361 @@
+
+ “I have done this assignment completely on my own. I have not copied it, nor have I given
+my solution to anyone else. I understand that if I am involved in plagiarism or cheating I will have to
+sign an official form that I have cheated and that this form will be stored in my official university
+record. I also understand that I will receive a grade of 0 for the involved assignment and my grade will
+be reduced by one level (e.g., from A to A- or from B+ to B) for my first offense, and that I will receive
+a grade of “F” for the course for any additional offense of any kind.” 
+
+
+
+
+
+
+
+SQL> start q1
+SQL> SELECT B#,first_name||' '||last_name AS full_name
+  2  from (select B#,last_name,first_name
+  3  from Students
+  4  where gpa > 3.5);
+
+B#   FULL_NAME                                                                  
+---- -------------------------------                                            
+B003 Tracy Wang                                                                 
+B006 Terry Zillman                                                              
+B007 Becky Lee                                                                  
+B009 Ben Liu                                                                    
+B010 Sata Patel                                                                 
+B011 Art Chang                                                                  
+B012 Tara Ramesh                                                                
+
+7 rows selected.
+
+SQL> start q2
+SQL> Select tas.B# , Students.first_name , Students.last_name , Students.bdate as "birth date"
+  2  FROM Students
+  3  Right JOIN tas ON Students.B# = tas.B#
+  4  where students.deptname = 'CS';
+
+B#   FIRST_NAME      LAST_NAME       birth dat                                  
+---- --------------- --------------- ---------                                  
+B005 Jack            Smith           18-OCT-91                                  
+B010 Sata            Patel           12-OCT-90                                  
+B011 Art             Chang           08-JUN-89                                  
+
+SQL> start q3
+SQL> Select Classes.classid, concat(Classes.dept_code, Classes.course#) as course_id ,Students.email, Students. first_name ||' '||Students. last_name as "TA's name"
+  2  From tas
+  3  INNER JOIN Classes ON tas.B# = Classes.TA_B#
+  4  Inner Join Students on tas.B# = Students.B# and tas.ta_level = 'PhD';
+
+CLASS COURSE_ID                                    EMAIL                        
+----- -------------------------------------------- --------------------         
+TA's name                                                                       
+-------------------------------                                                 
+c0002 Math314                                      ramesh@bu.edu                
+Tara Ramesh                                                                     
+                                                                                
+c0006 CS532                                        chang@bu.edu                 
+Art Chang                                                                       
+                                                                                
+
+SQL> start q4
+SQL> Select b#,first_name, last_name,gpa
+  2  From students s
+  3  where
+  4  ( select count(e.B#) as count1
+  5  from enrollments e left join classes c on e.classid = c.classid
+  6  where c.dept_code LIKE '%Math%'  and e.B#=s.b# )>=1
+  7  and
+  8  ( select count(e.B#) as count2
+  9  from enrollments e left join classes c on e.classid = c.classid
+ 10  where c.dept_code LIKE '%CS%'   and e.B#=s.b# )>=1;
+
+B#   FIRST_NAME      LAST_NAME              GPA                                 
+---- --------------- --------------- ----------                                 
+B001 Anne            Broder                3.17                                 
+
+SQL> start q5
+SQL> select distinct  B#, first_name, last_name
+  2  from (select  enrollments.lgrade,students.B#, students.first_name, students.last_name
+  3  from students, enrollments
+  4  where not enrollments.lgrade = 'A' and  students.b# = enrollments.b#);
+
+B#   FIRST_NAME      LAST_NAME                                                  
+---- --------------- ---------------                                            
+B001 Anne            Broder                                                     
+B005 Jack            Smith                                                      
+B002 Terry           Buttler                                                    
+B003 Tracy           Wang                                                       
+B004 Barbara         Callan                                                     
+
+SQL> 
+SQL> start q6
+SQL> select distinct enrollments.b# , students.first_name, students.last_name
+  2  from enrollments,students
+  3  where enrollments.lgrade = 'A' and enrollments.lgrade IS NOT NULL and enrollments.B# = Students.B# ;
+
+B#   FIRST_NAME      LAST_NAME                                                  
+---- --------------- ---------------                                            
+B001 Anne            Broder                                                     
+B003 Tracy           Wang                                                       
+B007 Becky           Lee                                                        
+B006 Terry           Zillman                                                    
+
+SQL> startq7
+SP2-0042: unknown command "startq7" - rest of line ignored.
+SQL> start q7
+SQL> select classid, dept_code,course#, limit-class_size as seats_alloted
+  2  from classes
+  3  where course# <500 and semester = 'Spring' and year = 2017;
+
+CLASS DEPT    COURSE# SEATS_ALLOTED                                             
+----- ---- ---------- -------------                                             
+c0001 CS          432             1                                             
+c0005 CS          240             1                                             
+c0007 Math        221             0                                             
+
+SQL> start q8
+SQL> select B#,sum(credits)
+  2  from(
+  3  select enrollments.B#,classes.classid,course_credit.course#, course_credit.credits
+  4  from classes,enrollments,course_credit
+  5  where classes.classid = enrollments.classid and
+  6  	   classes.course# = course_credit.course#)
+  7  	   group by  B#
+  8  order by b#;
+
+B#   SUM(CREDITS)                                                               
+---- ------------                                                               
+B001           23                                                               
+B002            4                                                               
+B003           12                                                               
+B004            8                                                               
+B005            3                                                               
+B006            3                                                               
+B007            4                                                               
+
+7 rows selected.
+
+SQL> start q9
+SQL> select dept_code, course#,count(*)
+  2  from(
+  3  select classes.dept_code, classes.course#, enrollments.B#
+  4  from classes, enrollments
+  5  where classes.classid = enrollments.classid)
+  6  group by dept_code,course#;
+
+DEPT    COURSE#   COUNT(*)                                                      
+---- ---------- ----------                                                      
+CS          240          3                                                      
+CS          432          5                                                      
+CS          532          3                                                      
+Math        221          1                                                      
+Math        314          3                                                      
+
+SQL> 
+SQL> startq10[D[D[D
+SP2-0734: unknown command beginning "startq10[..." - rest of line ignored.
+SQL> start q10
+SQL> select  students.B#, students.first_name , students.last_name,count(enrollments.B#)as "no_of_classes"
+  2  from enrollments,students
+  3  where enrollments.b# = students.b#
+  4  group by students.first_name , students.last_name, students.B#
+  5  having count(enrollments.B#) >= 2;
+
+B#   FIRST_NAME      LAST_NAME       no_of_classes                              
+---- --------------- --------------- -------------                              
+B001 Anne            Broder                      6                              
+B003 Tracy           Wang                        3                              
+B004 Barbara         Callan                      2                              
+
+SQL> start q11
+SQL> select DISTINCT Students.B#,students.first_name,students.last_name
+  2  from students , enrollments , classes
+  3  where students.B#=enrollments.B# and enrollments.classid=classes.classid and classes.dept_code='CS' AND classes.semester='Spring' AND classes.year='2017'
+  4  group by Students.B#,students.first_name,students.last_name
+  5  having count(*) > 2;
+
+B#   FIRST_NAME      LAST_NAME                                                  
+---- --------------- ---------------                                            
+B001 Anne            Broder                                                     
+
+SQL> start q12
+SQL> select distinct enrollments.classid,classes.dept_code,classes.course#
+  2  from students,enrollments,classes
+  3  where  classes.classid = enrollments.classid
+  4  and enrollments.b# = students.B# and students.status = 'junior'
+  5  group by enrollments.classid,classes.dept_code,classes.course#
+  6  having count(*) > 1;
+
+CLASS DEPT    COURSE#                                                           
+----- ---- ----------                                                           
+c0004 CS          432                                                           
+c0005 CS          240                                                           
+
+SQL> start q13
+SQL> select distinct first_name,last_name,b#
+  2  from (
+  3  select students.first_name, students.last_name,students.b#,classes.classid
+  4  from students,enrollments,classes
+  5  where not students.deptname = classes.dept_code and students.b# = enrollments.B# and
+  6  classes.classid = enrollments.classid);
+
+FIRST_NAME      LAST_NAME       B#                                              
+--------------- --------------- ----                                            
+Becky           Lee             B007                                            
+Anne            Broder          B001                                            
+Terry           Zillman         B006                                            
+Barbara         Callan          B004                                            
+
+SQL> group by first_name,last_name,b# ;
+SP2-0734: unknown command beginning "group by f..." - rest of line ignored.
+SQL> start q13
+SQL> select distinct first_name,last_name,b#
+  2  from (
+  3  select students.first_name, students.last_name,students.b#,classes.classid
+  4  from students,enrollments,classes
+  5  where not students.deptname = classes.dept_code and students.b# = enrollments.B# and
+  6  classes.classid = enrollments.classid)
+  7  group by first_name,last_name,b# ;
+
+FIRST_NAME      LAST_NAME       B#                                              
+--------------- --------------- ----                                            
+Becky           Lee             B007                                            
+Anne            Broder          B001                                            
+Terry           Zillman         B006                                            
+Barbara         Callan          B004                                            
+
+SQL> start q14
+SQL> select students.first_name, students.last_name,students.b#
+  2  from students,enrollments,classes
+  3  where  students.deptname = classes.dept_code and students.b# = enrollments.B# and
+  4  classes.classid = enrollments.classid
+  5  group by students.first_name, students.last_name,students.b# ;
+
+FIRST_NAME      LAST_NAME       B#                                              
+--------------- --------------- ----                                            
+Jack            Smith           B005                                            
+Anne            Broder          B001                                            
+Terry           Buttler         B002                                            
+Tracy           Wang            B003                                            
+
+SQL> start q15
+SQL> select  classes.dept_code,classes.course#, courses.title, case when enrollments.lgrade is NULL then 'grade missing' else enrollments.lgrade end as "lgrade"
+  2  from courses,enrollments,classes
+  3  where enrollments.b#='B003'and courses.course#=classes.course# and enrollments.classid=classes.classid
+  4  group by enrollments.b#, classes.classid, classes.dept_code, classes.course#, courses.title, enrollments.lgrade;
+
+DEPT    COURSE# TITLE                lgrade                                     
+---- ---------- -------------------- -------------                              
+CS          240 data structure       grade missing                              
+CS          432 database systems     I                                          
+CS          432 database systems     A                                          
+
+SQL> start q16
+SQL> select distinct courses.dept_code, courses.course#, courses.title
+  2  from courses, classes, enrollments
+  3  where courses.title LIKE '%systems%' and courses.course#=classes.course# and enrollments.classid=classes.classid;
+
+DEPT    COURSE# TITLE                                                           
+---- ---------- --------------------                                            
+CS          432 database systems                                                
+CS          532 database systems                                                
+
+SQL> start q17
+SQL> select b#, classid, lgrade,
+  2  CASE lgrade
+  3  WHEN 'A' THEN 4
+  4  WHEN 'A-' THEN 3.7
+  5  WHEN 'B+' THEN 3.3
+  6  WHEN 'B' THEN 3
+  7  WHEN 'B-' THEN 2.7
+  8  WHEN 'C+' THEN 2.3
+  9  WHEN 'C' THEN 2
+ 10  WHEN 'C-' THEN 1.7
+ 11  WHEN 'D' THEN 1
+ 12  ELSE 0 END AS ngrade
+ 13  from enrollments
+ 14  where  NOT lgrade='I' and lgrade is not null
+ 15  order by lgrade;
+
+B#   CLASS LG     NGRADE                                                        
+---- ----- -- ----------                                                        
+B001 c0001 A           4                                                        
+B006 c0006 A           4                                                        
+B001 c0004 A           4                                                        
+B007 c0007 A           4                                                        
+B003 c0004 A           4                                                        
+B005 c0006 B           3                                                        
+B001 c0005 B           3                                                        
+B001 c0003 B           3                                                        
+B002 c0002 B           3                                                        
+B004 c0005 B+        3.3                                                        
+B001 c0006 B-        2.7                                                        
+
+B#   CLASS LG     NGRADE                                                        
+---- ----- -- ----------                                                        
+B004 c0004 C           2                                                        
+B001 c0002 C+        2.3                                                        
+
+13 rows selected.
+
+SQL> start q18
+SQL> select distinct students.b#, students.first_name, students.last_name
+  2  from students, enrollments
+  3  where students.b#=enrollments.b# and students.b#  in
+  4  (select b# from enrollments
+  5  where classid in
+  6  (select classid from enrollments
+  7  where b#='B005'));
+
+B#   FIRST_NAME      LAST_NAME                                                  
+---- --------------- ---------------                                            
+B001 Anne            Broder                                                     
+B005 Jack            Smith                                                      
+B006 Terry           Zillman                                                    
+
+SQL> 
+SQL> select distinct students.b#, students.first_name, students.last_name
+  2  from students, enrollments
+  3  where students.b#=enrollments.b# and students.b#  in
+  4  (select b# from enrollments
+  5  where classid in
+  6  (select classid from enrollments
+  7  where b#='B005'));
+
+B#   FIRST_NAME      LAST_NAME                                                  
+---- --------------- ---------------                                            
+B001 Anne            Broder                                                     
+B005 Jack            Smith                                                      
+B006 Terry           Zillman                                                    
+
+SQL> start q19
+SQL> select avg(credit_sum) as avg
+  2  from(
+  3  select B#,sum(credits) as credit_sum
+  4  from(
+  5  select enrollments.B#,classes.classid,course_credit.course#, course_credit.credits
+  6  from classes,enrollments,course_credit
+  7  where classes.classid = enrollments.classid and
+  8  	   classes.course# = course_credit.course# and enrollments.lgrade is not null and not enrollments.lgrade = 'I' )
+  9  	   group by  B#
+ 10  order by b#);
+
+       AVG                                                                      
+----------                                                                      
+         7                                                                      
+
+SQL> start q20
+SQL> SELECT dept_code, (sum_of/no_of) AS AVERAGE
+  2  FROM (SELECT Classes.Dept_code ,SUM(course_credit.CREDITS) as sum_of, COUNT(DISTINCT enrollments.B#) AS no_of
+  3  FROM ENROLLMENTS ,CLASSES , COURSE_CREDIT
+  4  WHERE enrollments.CLASSID=Classes.CLASSID AND Classes.COURSE#=Course_Credit.COURSE# and enrollments.lgrade is not null and not enrollments.lgrade = 'I'
+  5  GROUP BY Classes.Dept_Code);
+
+DEPT    AVERAGE                                                                 
+---- ----------                                                                 
+CS          6.6                                                                 
+Math 5.33333333                                                                 
+
+SQL> spool off
