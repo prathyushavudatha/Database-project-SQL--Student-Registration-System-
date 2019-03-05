@@ -1,8 +1,9 @@
 # Database-project-SQL--Student-Registration-System-
 20 High level SQL quires are applied to a Database System of Student Registration in a University.
 
-"proj1_tables_script18.pdf" -->  has all the creation and insertion queries.
-"Proj1.txt" --> has all the 20 manipulation quires on the created database with output tables.
+**proj1_tables_script18.pdf** -  has all the creation and insertion queries.
+
+**Proj1.txt** - has all the 20 manipulation quires on the created database with output tables.
 
 The following normalized tables from the Student Registration System (some tables have been simplified) will be used in this project:
 
