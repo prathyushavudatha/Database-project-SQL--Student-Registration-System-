@@ -1,6 +1,6 @@
 20 highlevel SQL quries and their respective results are implemented below.
 
-
+1.Find the B#, the first name and last name of every CS student whose GPA is higher than 3.5. In the output, first name and last name of each student should be concatenated with a space in between under a new column header name.
 
 SQL> start q1
 SQL> SELECT B#,first_name||' '||last_name AS full_name
@@ -20,17 +20,21 @@ B012 Tara Ramesh
 
 7 rows selected.
 
+2.For each TA from the CS department, find his/her B#, first name, last name and birth date. The header of the last column needs to be “birth date” (without the quotes and there is a space between birth and date). To not have header “birth date” truncated in the output, run SQL> column “birth date” format a10 before you run your query, here 10 is the new column/header width in character for “birth date”.)
+
 SQL> start q2
 SQL> Select tas.B# , Students.first_name , Students.last_name , Students.bdate as "birth date"
   2  FROM Students
   3  Right JOIN tas ON Students.B# = tas.B#
   4  where students.deptname = 'CS';
 
-B#   FIRST_NAME      LAST_NAME       birth dat                                  
+B#   FIRST_NAME      LAST_NAME       birth date                                  
 ---- --------------- --------------- ---------                                  
 B005 Jack            Smith           18-OCT-91                                  
 B010 Sata            Patel           12-OCT-90                                  
 B011 Art             Chang           08-JUN-89                                  
+
+3.For each class that has a PhD student TA, find its classid, dept_code and course# as well as the TA’s name and email. Here a TA’s name is its first name followed by its last name with a space in between. Furthermore, in the output, dept_code and course# of each class are concatenated under a new column header course_id. Make sure that no column header in the output is truncated without manually editing the spool file.
 
 SQL> start q3
 SQL> Select Classes.classid, concat(Classes.dept_code, Classes.course#) as course_id ,Students.email, Students. first_name ||' '||Students. last_name as "TA's name"
@@ -47,7 +51,8 @@ Tara Ramesh
                                                                                 
 c0006 CS532                                        chang@bu.edu                 
 Art Chang                                                                       
-                                                                                
+   
+4.Find the B#, first name, last name and GPA of each student who has taken at least one CS course and at least one math course. Write an SQL query that uses neither intersect nor distinct but the results have no duplicate.
 
 SQL> start q4
 SQL> Select b#,first_name, last_name,gpa
@@ -65,6 +70,8 @@ B#   FIRST_NAME      LAST_NAME              GPA
 ---- --------------- --------------- ----------                                 
 B001 Anne            Broder                3.17                                 
 
+5.Find the B#, first name and last name of each student who has taken at least one course but has never received an A for any course he/she has taken. Write a query with an uncorrelated subquery and write another query with a correlated subquery.
+
 SQL> start q5
 SQL> select distinct  B#, first_name, last_name
   2  from (select  enrollments.lgrade,students.B#, students.first_name, students.last_name
@@ -79,6 +86,9 @@ B002 Terry           Buttler
 B003 Tracy           Wang                                                       
 B004 Barbara         Callan                                                     
 
+6.Find the B#, first name and last name of each student who has taken at least one course and received an A for every class he/she has taken. Count only classes for which he/she received a non-null grade. For this query, do not use the GPA information. Also do not use any aggregate (set) function.
+
+
 SQL> 
 SQL> start q6
 SQL> select distinct enrollments.b# , students.first_name, students.last_name
@@ -92,6 +102,8 @@ B003 Tracy           Wang
 B007 Becky           Lee                                                        
 B006 Terry           Zillman                                                    
 
+7.Find the classid, dept_code and course# of each undergraduate class (i.e., course# < 500) that was offered in Spring 2017. For each such class, also list the number of seats available (computed by limit – class_size) under the header “seats_available”.
+
 SQL> startq7
 SP2-0042: unknown command "startq7" - rest of line ignored.
 SQL> start q7
@@ -104,6 +116,8 @@ CLASS DEPT    COURSE# SEATS_ALLOTED
 c0001 CS          432             1                                             
 c0005 CS          240             1                                             
 c0007 Math        221             0                                             
+
+8.Find the B# and the total number of credits of each student.
 
 SQL> start q8
 SQL> select B#,sum(credits)
@@ -127,6 +141,8 @@ B007            4
 
 7 rows selected.
 
+9.Find the dept_code and course# of the course that has been attended by most students. If a course has been offered multiple times, the numbers of students for all these offerings should be added for the course. Note that it is possible that multiple courses may have the same highest attendance; in this case, all such courses should be output.
+
 SQL> start q9
 SQL> select dept_code, course#,count(*)
   2  from(
@@ -142,6 +158,8 @@ CS          432          5
 CS          532          3                                                      
 Math        221          1                                                      
 Math        314          3                                                      
+
+10.Find the B#, first name and last name of every student who has taken at least 2 classes. Also output the number of classes each such student has taken.
 
 SQL> 
 SQL> startq10[D[D[D
@@ -159,6 +177,8 @@ B001 Anne            Broder                      6
 B003 Tracy           Wang                        3                              
 B004 Barbara         Callan                      2                              
 
+11.Find the classid, dept_code and course# of each class that has been taken by all juniors.
+
 SQL> start q11
 SQL> select DISTINCT Students.B#,students.first_name,students.last_name
   2  from students , enrollments , classes
@@ -169,6 +189,8 @@ SQL> select DISTINCT Students.B#,students.first_name,students.last_name
 B#   FIRST_NAME      LAST_NAME                                                  
 ---- --------------- ---------------                                            
 B001 Anne            Broder                                                     
+
+12.Find the B#, first name and last name of every student who has taken all CS classes offered in Spring 2017.
 
 SQL> start q12
 SQL> select distinct enrollments.classid,classes.dept_code,classes.course#
@@ -182,6 +204,9 @@ CLASS DEPT    COURSE#
 ----- ---- ----------                                                           
 c0004 CS          432                                                           
 c0005 CS          240                                                           
+
+
+13.Find the B#, first name and last name of every student who has taken at least one course offered by a department different from his/her own department. Write a nested query with a correlated subquery.
 
 SQL> start q13
 SQL> select distinct first_name,last_name,b#
@@ -216,6 +241,8 @@ Anne            Broder          B001
 Terry           Zillman         B006                                            
 Barbara         Callan          B004                                            
 
+14.Find the B#, first name and last name of every student who has taken at least one course but has not taken any course offered by a department different from his/her own department.
+
 SQL> start q14
 SQL> select students.first_name, students.last_name,students.b#
   2  from students,enrollments,classes
@@ -230,6 +257,8 @@ Anne            Broder          B001
 Terry           Buttler         B002                                            
 Tracy           Wang            B003                                            
 
+15.List the dept_code, course# and title of each course student B003 has taken. For each such course, also list the grade the student received. If no grade has been assigned for a course, output “grade missing” as the grade information for the course.
+
 SQL> start q15
 SQL> select  classes.dept_code,classes.course#, courses.title, case when enrollments.lgrade is NULL then 'grade missing' else enrollments.lgrade end as "lgrade"
   2  from courses,enrollments,classes
@@ -242,6 +271,8 @@ CS          240 data structure       grade missing
 CS          432 database systems     I                                          
 CS          432 database systems     A                                          
 
+16.Find the dept_code, course# and title of each course whose title contains “systems” and that has been taken by all students whose GPA is 4.0. Note that even though a qualified course is required to be taken by all students whose GPA is 4.0, the course may also be taken by some students whose GPA is lower than 4.0.
+
 SQL> start q16
 SQL> select distinct courses.dept_code, courses.course#, courses.title
   2  from courses, classes, enrollments
@@ -251,6 +282,8 @@ DEPT    COURSE# TITLE
 ---- ---------- --------------------                                            
 CS          432 database systems                                                
 CS          532 database systems                                                
+
+17.Display the enrollment table with tuples with higher grades displayed first. Do not display tuples with null or incomplete (I) grades. Also convert letter grade (lgrade) to number grade (ngrade) based on A  4, A-  3.7, B+  3.3, B  3, B-  2.7, C+  2.3, C  2, C-  1.7 and D  1. Display the converted number grade for each row. Make sure no column header is truncated in the output.
 
 SQL> start q17
 SQL> select b#, classid, lgrade,
@@ -290,6 +323,8 @@ B001 c0002 C+        2.3
 
 13 rows selected.
 
+18.Find the B#, first name and last name of every student who has taken at least one course taken by student B005. Note that here we are talking about taking the same course, not just the same class. (Clearly, student B005 satisfies the condition and his first name should be included in the output.) Write two queries for this question, one uses only uncorrelated subqueries and the other uses only correlated subqueries.
+
 SQL> start q18
 SQL> select distinct students.b#, students.first_name, students.last_name
   2  from students, enrollments
@@ -320,6 +355,9 @@ B001 Anne            Broder
 B005 Jack            Smith                                                      
 B006 Terry           Zillman                                                    
 
+
+19.Find the average total number of credits earned by students (the average is over all students and only one value should be computed) who have taken at least one course. Don’t count the credits when the grade is null for a class.
+
 SQL> start q19
 SQL> select avg(credit_sum) as avg
   2  from(
@@ -335,6 +373,8 @@ SQL> select avg(credit_sum) as avg
        AVG                                                                      
 ----------                                                                      
          7                                                                      
+
+20.Find the average total number of credits earned by students in each department (the average is over all students in each department and one value should be computed for each department). For this query, we assume that at least one student from each department has taken a course. Don’t count the credits when the grade is null for a class. The output should have 2 columns: deptname, average_total_credits
 
 SQL> start q20
 SQL> SELECT dept_code, (sum_of/no_of) AS AVERAGE
